@@ -1,0 +1,71 @@
+clc;
+clear all;
+addpath('/MATLAB Drive/MobileSensorData')
+load Run_1.mat
+
+d = datetime('now');
+string(d)
+disp('Welcome to Fitness Tracker');
+prompt = "What is your name? ";
+name = input(prompt,"s");
+age = input('Your Age: ');
+
+weight = input('Weight(in kg):');
+height = input('Height(in m): ');
+%Position.latitude = [];
+%Position.latitude = input('Position latitude: ');
+%Position.longitude = [];
+%Position.longitude = input('Position longitude: ');
+
+bmi = weight/(height.^2);
+
+earthCirc = 24901;
+totaldis = 0;
+stride = 2.5;
+
+for i = 1: (length(Position.latitude)-1)
+lat1 = Position.latitude(i); % first latitude
+lat2 = Position.latitude(i+1); %second latitude
+lon1 = Position.longitude(i); % First longitude
+lon2 = Position.longitude(i+1); % Second latitude
+diff = distance(lat1, lon1, lat2, lon2);
+dis = (diff/360)*earthCirc;
+
+totaldis = totaldis +dis;
+end
+
+
+totaldis_ft = totaldis*5280;
+steps = totaldis_ft/stride;
+mph = totaldis/0.0166667;
+
+if(mph >=5.0 && mph <=10.0)
+    cond = "running";
+    METs = 7;
+elseif (mph >=2.0 && mph <=4.0)
+    cond = "walking";
+    METs = 3;
+elseif (mph <=1.0)
+    cond = "sitting";
+    METs = 1;
+else
+    cond = "error";
+end
+
+%After Machine Learning processed data
+%if(cond == "running")
+%    METs = 7;
+%elseif (cond == "walking")
+%    METs = 3;
+%elseif (cond == "sitting")
+%    METs = 1;
+%end
+
+calories = (METs * weight * 3.5) / 200;
+
+
+fprintf ('steps= %.2f,\n',steps);
+fprintf ('total distance (in miles)= %.2f,\n',totaldis);
+fprintf ('calories = %.2f,\n',calories);
+fprintf ('condition= %s,\n',cond);
+fprintf('bmi = %.2f,\n',bmi);
